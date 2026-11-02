@@ -8,7 +8,7 @@ Static HTML/CSS, no framework, no build step. Site text is in English.
 - **Never commit or push to `main` directly.** Every change goes through a pull request that the site owner (GitHub `Thairones`) reviews and merges:
   1. `git pull` on `main` first, then create a branch named after the change (`git switch -c add-constellations-to-home`).
   2. Commit, push the branch, and open a pull request against `main` (`gh pr create`, or the link GitHub prints after the push).
-  3. Vercel will mark the pull request's deployment as "Error" when the commit author isn't the owner: the Vercel project is on the free Hobby plan, which can't add other members. This is expected; don't try to fix it. The owner makes the preview from his side. Check the change locally instead and describe it clearly in the pull request.
+  3. Vercel comments on the pull request with a preview link of the modified site (previews are public); give that link to the person you're working with. If Vercel marks the deployment "Error" instead (the project is on the free Hobby plan, which can't add other members), don't try to fix it: the owner makes the preview from his side. Check the change locally and describe it clearly in the pull request.
   4. Do not merge it yourself. The owner merges it, and only then does the change go live. The owner must merge with "Create a merge commit" (not "Squash and merge"), so the commit that reaches `main` is in his name and Vercel deploys it.
 - Merging into `main` deploys to production automatically (Vercel is connected to this repo). Check the page locally before opening the pull request.
 - Local preview: `node .claude/serve.cjs` (configured in `.claude/launch.json`), then http://localhost:4173.
