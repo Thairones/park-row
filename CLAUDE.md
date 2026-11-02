@@ -5,7 +5,12 @@ Static HTML/CSS, no framework, no build step. Site text is in English.
 
 ## Publishing
 
-- Pushing to `main` on GitHub deploys to production automatically (Vercel is connected to this repo). Check the page locally before pushing.
+- **Never commit or push to `main` directly.** Every change goes through a pull request that the site owner (GitHub `Thairones`) reviews and merges:
+  1. `git pull` on `main` first, then create a branch named after the change (`git switch -c add-constellations-to-home`).
+  2. Commit, push the branch, and open a pull request against `main` (`gh pr create`, or the link GitHub prints after the push).
+  3. Vercel comments on the pull request with a preview link of the modified site; give that link to the person you're working with.
+  4. Do not merge it yourself. The owner merges it, and only then does the change go live.
+- Merging into `main` deploys to production automatically (Vercel is connected to this repo). Check the page locally before opening the pull request.
 - Local preview: `node .claude/serve.cjs` (configured in `.claude/launch.json`), then http://localhost:4173.
 - `vercel.json` turns on clean URLs (`/issues`, `/articles/anima-of-animals`) and caches jpg/ttf for one day: when you replace an image, give the new file a new name rather than overwriting it.
 - `.vercelignore` keeps `archive/`, `captures/`, `tools/`, `.claude/` and this file off the site.
