@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Park Row Magazine</title>
+  <meta name="description" content="Park Row Magazine, a film magazine.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800&family=Special+Elite&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/park-row.css">
+  <script>(function(){var seen=null;try{seen=sessionStorage.getItem('pr-intro')}catch(e){}if(!seen)document.documentElement.classList.add('intro')})();</script>
+  <script src="js/intro.js" defer></script>
+  <link rel="preload" as="image" href="img/intro-sign-wide.jpg">
+</head>
+<body class="home">
+  <div class="intro-veil" aria-hidden="true"></div>
+  <div class="intro-flyer" role="button" tabindex="0" aria-label="Enter Park Row Magazine">
+    <img class="intro-full" src="img/intro-sign-wide.jpg" alt="Park Row Magazine" width="2000" height="1003">
+    <img class="intro-cut" src="img/logo-sign.webp" alt="" width="800" height="607">
+  </div>
+  <p class="intro-hint" aria-hidden="true"><span class="hint-click">Click</span><span class="hint-tap">Tap</span> to enter</p>
+  <a class="corner-logo" href="index.html" aria-label="Park Row Magazine, home"><img src="img/logo-sign.webp" alt="" width="800" height="607"></a>
+  <div class="page">
+    <header class="masthead masthead--center">
+      <div class="rule rule--double"></div>
+      <div class="masthead-row">
+        <a class="brand" href="index.html"><span class="brand-name" aria-label="Park Row">park row</span> <span class="brand-sub">Magazine</span></a>
+      </div>
+      <div class="rule rule--double rule--flip"></div>
+    </header>
+
+    <nav class="nav" aria-label="Sections">
+      <a href="about.html">About</a><span class="star" aria-hidden="true">✱</span><a href="issues.html">Issues</a><span class="star" aria-hidden="true">✱</span><a href="gallery.html">Gallery</a>
+    </nav>
+
+    <main>
+
+      <!-- Le PDF du numéro : le jour de la sortie, remplacer cette ligne par un lien vers le PDF -->
+      <p class="coming-soon">Park Row Issue #1 coming soon!</p>
+
+      <!-- Un article = un bloc <article class="story"> : image large, titre, crédit, début, lien ..... -->
+      <section class="stories" aria-label="Articles">
+        <article class="story">
+          <a class="story-image" href="articles/a-cold-approach-to-phoenix.html">
+            <img src="img/a-cold-approach-to-phoenix/cover-nightgame.jpg" alt="Two men in profile leaning toward a screen, in black and white" width="1600" height="900" style="object-position: 50% 35%">
+          </a>
+          <div class="story-head">
+            <h2 class="story-title"><a href="articles/a-cold-approach-to-phoenix.html">A Cold Approach to Phoenix</a></h2>
+            <p class="story-credit">Chaz Mullis</p>
+          </div>
+          <p class="story-lede">An interview with Parker Corey on <em>Nightgame</em>. Few films today fit the mold of what used to be called a city symphony, and even fewer would dare to extend what such a sub-genre would entail in today's world. <a class="more" href="articles/a-cold-approach-to-phoenix.html" aria-label="Read the full article">.....</a></p>
+        </article>
+
+        <article class="story">
+          <a class="story-image" href="articles/anima-of-animals.html">
+            <img src="img/anima/cover.jpg" alt="Aurochs, horses and deer painted on the cave wall at Lascaux" width="720" height="472">
+          </a>
+          <p class="story-source">Lascaux painting, February 2006 — Prof saxx, Wikimedia Commons, CC BY-SA 3.0</p>
+          <div class="story-head">
+            <h2 class="story-title"><a href="articles/anima-of-animals.html">Anima of Animals</a></h2>
+            <p class="story-credit">Aron Mishktar</p>
+          </div>
+          <p class="story-lede">The animal in Rilke dwells within space. Here I will designate the Open as a lived field, a world neither cut off from the being that moves through it, nor reduced to an object by a gaze that turns back upon itself. Humans, by contrast, are a reflection of the world; a world itself reversed by a monotheistic god who turns humanity back toward himself. <a class="more" href="articles/anima-of-animals.html" aria-label="Read the full article">.....</a></p>
+        </article>
+      </section>
+    </main>
+
+    <footer class="contact">Contact us<span class="contact-sep" aria-hidden="true">✱</span><a href="mailto:parkrowmagazine@gmail.com">parkrowmagazine@gmail.com</a></footer>
+  </div>
+</body>
+</html>

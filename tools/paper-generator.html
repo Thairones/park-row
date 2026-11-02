@@ -1,0 +1,159 @@
+<!doctype html>
+<!-- Générateur du papier froissé (img/paper.jpg).
+     Ouvrir ce fichier dans un navigateur, puis « Télécharger ». Convertir le PNG
+     en JPEG (qualité ~85) et le mettre dans img/paper.jpg.
+     Réglages par l'adresse, par ex. tools/paper-generator.html?seed=12&a=.6&b=.6
+       seed  : un autre froissage            base : couleur du papier (r,g,b), ex. 230,228,222 pour du blanc
+       a / b : lumière ambiante / directe     sb, sm : pente des grandes / moyennes zones
+       rough : petits plis au hasard          edge : fil de lumière sur les arêtes   c : taille des facettes (diviseur de 1600)
+     Valeurs utilisées pour img/paper.jpg : c=50 sb=.13 sm=.075 rough=2.4 a=.6 b=.6 edge=1.2 seed=7 -->
+<html lang="fr"><head><meta charset="utf-8"><title>Générateur de papier froissé</title>
+<style>html,body{margin:0;background:#222}canvas{display:block}a.dl{position:fixed;right:16px;top:16px;padding:10px 16px;background:#fff;color:#000;font:700 14px Arial,sans-serif;text-decoration:none}</style></head>
+<body><canvas id="c" width="1600" height="1600"></canvas><a class="dl" id="dl" href="#" download="paper.png">Télécharger paper.png</a>
+<script>
+(() => {
+  // Un carré de papier froissé qui se répète sans raccord (tout est périodique).
+  const T = 1600, C = Number(new URLSearchParams(location.search).get('c') || 64), n = T / C;
+  const q = new URLSearchParams(location.search);
+  const SEED = Number(q.get('seed') || 7);
+  const BASE = (q.get('base') || '204,172,128').split(',').map(Number);
+  const A = Number(q.get('a') || 0.6), B = Number(q.get('b') || 0.6);   // lumière ambiante, lumière directe
+  const SB = Number(q.get('sb') || 0.13), SM = Number(q.get('sm') || 0.075);  // pente des grandes et moyennes zones
+  const ROUGH = Number(q.get('rough') || 2.4);                                  // petits plis au hasard
+  const EDGE = Number(q.get('edge') || 1.2);                                  // fil de lumière sur les arêtes
+  const ctx = document.getElementById('c').getContext('2d');
+
+  function rng(seed) {
+    let a = seed >>> 0;
+    return () => {
+      a = (a + 0x6d2b79f5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const r = rng(SEED);
+  const wrap = (d) => d - Math.round(d / T) * T;
+
+  // Le maillage : une grille de points un peu déplacés
+  const vx = new Float32Array(n * n), vy = new Float32Array(n * n), vh = new Float32Array(n * n);
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+    vx[j * n + i] = (i + 0.5 + (r() - 0.5) * 0.84) * C;
+    vy[j * n + i] = (j + 0.5 + (r() - 0.5) * 0.84) * C;
+  }
+
+  // Des zones (grandes puis moyennes), chacune avec son propre plan incliné
+  function seeds(m, slope, rough) {
+    const out = [];
+    const cell = T / m;
+    for (let j = 0; j < m; j++) for (let i = 0; i < m; i++) out.push({
+      x: (i + 0.1 + r() * 0.8) * cell, y: (j + 0.1 + r() * 0.8) * cell,
+      ax: (r() - 0.5) * 2 * slope, ay: (r() - 0.5) * 2 * slope, c: (r() - 0.5) * 20,
+      rough: r() < 0.35 ? 0.1 : 0.3 + r() * rough,
+    });
+    return out;
+  }
+  const big = seeds(6, SB, 0.9), med = seeds(13, SM, 0.5);
+  function nearest(list, x, y) {
+    let best = null, bd = Infinity, bdx = 0, bdy = 0;
+    for (const s of list) {
+      const dx = wrap(x - s.x), dy = wrap(y - s.y), d = dx * dx + dy * dy;
+      if (d < bd) { bd = d; best = s; bdx = dx; bdy = dy; }
+    }
+    return { s: best, dx: bdx, dy: bdy };
+  }
+
+  // Un léger bombé, pour que les grandes facettes ne soient pas parfaitement plates
+  const G = 8, lat = Float32Array.from({ length: G * G }, () => r());
+  const sm = (t) => t * t * (3 - 2 * t);
+  function bulge(x, y) {
+    const u = (x / T) * G, v = (y / T) * G;
+    const i = Math.floor(u), j = Math.floor(v), fu = sm(u - i), fv = sm(v - j);
+    const at = (a, b) => lat[((b % G) + G) % G * G + ((a % G) + G) % G];
+    return (at(i, j) * (1 - fu) + at(i + 1, j) * fu) * (1 - fv) + (at(i, j + 1) * (1 - fu) + at(i + 1, j + 1) * fu) * fv - 0.5;
+  }
+
+  for (let k = 0; k < n * n; k++) {
+    const x = vx[k], y = vy[k];
+    const B = nearest(big, x, y), M = nearest(med, x, y);
+    vh[k] = B.s.ax * B.dx + B.s.ay * B.dy + B.s.c
+      + 0.55 * (M.s.ax * M.dx + M.s.ay * M.dy + M.s.c)
+      + B.s.rough * ROUGH * (r() - 0.5) * 2
+      + 6 * bulge(x, y);
+  }
+  const diag = Uint8Array.from({ length: n * n }, () => (r() < 0.5 ? 1 : 0));
+
+  function V(i, j) {
+    const ii = ((i % n) + n) % n, jj = ((j % n) + n) % n;
+    const k = jj * n + ii;
+    return [vx[k] + Math.floor(i / n) * T, vy[k] + Math.floor(j / n) * T, vh[k]];
+  }
+
+  // La lumière vient d'en haut à gauche
+  let L = [-0.45, -0.62, 0.64];
+  const ln = Math.hypot(...L); L = L.map((v) => v / ln);
+  function lambert(a, b, c) {
+    const e1 = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], e2 = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+    let N = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]];
+    if (N[2] < 0) N = N.map((v) => -v);
+    const nn = Math.hypot(...N) || 1;
+    return Math.max(0, (N[0] * L[0] + N[1] * L[1] + N[2] * L[2]) / nn);
+  }
+  function tri(a, b, c, lam) {
+    const k = A + B * lam;
+    const col = `rgb(${BASE.map((v) => Math.max(0, Math.min(255, Math.round(v * k)))).join(',')})`;
+    ctx.beginPath();
+    ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.lineTo(c[0], c[1]); ctx.closePath();
+    ctx.fillStyle = col; ctx.strokeStyle = col; ctx.lineWidth = 0.9; ctx.lineJoin = 'round';
+    ctx.fill(); ctx.stroke();
+  }
+  // Les deux triangles d'une case : [haut/droite, bas/gauche] et leur éclairement
+  function cell(i, j) {
+    const a = V(i, j), b = V(i + 1, j), c = V(i, j + 1), d = V(i + 1, j + 1);
+    const dg = diag[((j % n) + n) % n * n + ((i % n) + n) % n];
+    return dg
+      ? { a, b, c, d, dg, t1: [a, b, d], t2: [a, d, c], l1: lambert(a, b, d), l2: lambert(a, d, c) }
+      : { a, b, c, d, dg, t1: [a, b, c], t2: [b, d, c], l1: lambert(a, b, c), l2: lambert(b, d, c) };
+  }
+  const cells = new Map();
+  const at = (i, j) => { const k = i + ',' + j; if (!cells.has(k)) cells.set(k, cell(i, j)); return cells.get(k); };
+  for (let j = -1; j <= n; j++) for (let i = -1; i <= n; i++) {
+    const c = at(i, j);
+    tri(...c.t1, c.l1); tri(...c.t2, c.l2);
+  }
+  // Les plis : un fil clair là où deux facettes se cassent franchement
+  if (EDGE > 0) {
+    ctx.lineCap = 'round';
+    const line = (p, q, l1, l2) => {
+      const dlt = Math.abs(l1 - l2);
+      if (dlt < 0.05) return;
+      ctx.strokeStyle = `rgba(255, 246, 228, ${Math.min(0.55, dlt * 1.3 * EDGE).toFixed(3)})`;
+      ctx.lineWidth = 0.8;
+      ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); ctx.stroke();
+    };
+    for (let j = -1; j <= n; j++) for (let i = -1; i <= n; i++) {
+      const c = at(i, j), rt = at(i + 1, j), bt = at(i, j + 1);
+      // la diagonale
+      if (c.dg) line(c.a, c.d, c.l1, c.l2); else line(c.b, c.c, c.l1, c.l2);
+      // l'arête de droite (b–d) : triangle de droite de cette case contre triangle de gauche de la suivante
+      line(c.b, c.d, c.dg ? c.l1 : c.l2, rt.dg ? rt.l2 : rt.l1);
+      // l'arête du bas (c–d) : triangle du bas contre triangle du haut de la case dessous
+      line(c.c, c.d, c.l2, bt.l1);
+    }
+  }
+
+  // La fibre du papier (un bruit fin, périodique)
+  const N = 200, g = document.createElement('canvas');
+  g.width = g.height = N;
+  const gc = g.getContext('2d'), img = gc.createImageData(N, N);
+  for (let i = 0; i < N * N; i++) { const v = 112 + Math.round(r() * 32); img.data[i * 4] = img.data[i * 4 + 1] = img.data[i * 4 + 2] = v; img.data[i * 4 + 3] = 255; }
+  gc.putImageData(img, 0, 0);
+  ctx.save();
+  ctx.globalCompositeOperation = 'soft-light';
+  ctx.globalAlpha = 0.5;
+  ctx.fillStyle = ctx.createPattern(g, 'repeat');
+  ctx.fillRect(0, 0, T, T);
+  ctx.restore();
+  document.getElementById('dl').href = document.getElementById('c').toDataURL('image/png');
+})();
+</script></body></html>

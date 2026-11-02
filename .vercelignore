@@ -1,0 +1,8 @@
+# Ne pas mettre en ligne : anciennes versions, captures d'écran, outils
+archive
+captures
+tools
+.claude
+node_modules
+package-lock.json
+CLAUDE.md

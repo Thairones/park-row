@@ -1,0 +1,942 @@
+/* Park Row Magazine — noir sur blanc, lettré comme un panneau de rue.
+   Pas d'ombre portée, pas d'effet : des filets et des caractères. */
+
+/* Toujours en sombre (le mode jour a été retiré) : fond noir, encre blanc cassé */
+:root {
+  color-scheme: dark;
+  --paper: #121110;
+  --ink: #efe6d3;
+  --ink-soft: #aaa196;
+
+  /* Overpass : la version libre de la Highway Gothic des panneaux américains */
+  --sign: 'Overpass', 'Highway Gothic', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* La police du titre : GreekHouse Symbolized (fonts/greekhouse-symbolized.ttf, © NS Marketing 2006) */
+@font-face {
+  font-family: 'GreekHouse Symbolized';
+  src: url("../fonts/greekhouse-symbolized.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* La police du titre « PARK ROW » et de « MAGAZINE » : Via Appia (fonts/via-appia.ttf, © 2021 Yves Michel,
+   DaFont, gratuite pour usage personnel ; sous-ensemble latin) */
+@font-face {
+  font-family: 'Via Appia';
+  src: url("../fonts/via-appia.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* La police du texte des articles : Old Newspaper Types (fonts/old-newspaper-types.ttf, © M. Klein).
+   Pas d'italique dessiné : le navigateur penche les lettres lui-même. */
+@font-face {
+  font-family: 'Old Newspaper Types';
+  src: url("../fonts/old-newspaper-types.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Empêche Chrome Android (et Safari iOS) de grossir tout seul les longs paragraphes
+   (« font boosting ») : sinon les débuts d'articles sortent énormes à côté de titres minuscules */
+html { background: var(--paper); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font: 400 17.5px/1.6 var(--sign);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { transition: background-color .25s; }
+  body { transition: color .25s; }
+}
+
+a { color: inherit; }
+
+/* ---------- La page ---------- */
+
+.page {
+  max-width: 920px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 26px 56px 40px;
+}
+
+.rule--double {
+  height: 5px;
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+
+/* ---------- La manchette ---------- */
+
+.masthead { margin-bottom: 33px; } /* même écart sous MAGAZINE qu'au-dessus du titre */
+
+.masthead-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 28px;
+  margin-top: 12px;
+}
+
+.masthead-right {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 28px;
+}
+
+.brand {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 16px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* Le logo : le poteau dessiné, accroché au coin en haut à gauche de l'écran.
+   Penché, il sort par le bord comme s'il tenait au mur. Inversé la nuit. */
+.corner-logo {
+  --logo-w: clamp(96px, calc((100vw - 920px) / 2 + 40px), 250px);
+  position: absolute;
+  top: calc(var(--logo-w) * -.12);
+  left: calc(var(--logo-w) * -.05);
+  z-index: 4;
+  display: block;
+  width: var(--logo-w);
+  transform: rotate(22deg);
+  transform-origin: 0 0;
+}
+.corner-logo img { display: block; width: 100%; height: auto; filter: invert(1) brightness(.92); }
+
+/* La police des grands titres de rubrique : Augustus (fonts/augustus.ttf) */
+@font-face {
+  font-family: 'Augustus';
+  src: url("../fonts/augustus.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+body { position: relative; }
+
+/* Le titre en Via Appia, en capitales romaines (le HTML garde « park row » en minuscules) */
+.brand-name {
+  font: 400 76px/1 'Via Appia', 'Times New Roman', serif;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+/* « MAGAZINE » dans la même police que le titre, pour se distinguer du menu (Overpass) */
+.brand-sub {
+  font: 400 15px/1 'Via Appia', 'Times New Roman', serif;
+  text-transform: uppercase;
+  letter-spacing: .32em;
+}
+
+.nav {
+  border-top: 1px solid var(--ink);
+  border-bottom: 3px solid var(--ink);
+  padding: 13px 0 11px;
+  text-align: center;
+  font: 700 13px/1.6 var(--sign);
+  text-transform: uppercase;
+  letter-spacing: .24em;
+}
+
+.nav a { padding: 0 2px; text-decoration: none; }
+
+/* Accueil : ISSUES pile au centre, sous MAGAZINE (ABOUT et GALLERY n'ont pas la même longueur,
+   on ne centre donc pas le menu en bloc mais la rubrique du milieu) ; à gauche de chaque mot,
+   l'équivalent de l'espacement qui suit sa dernière lettre */
+.nav:not(.nav--inline) {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto 1fr;
+  align-items: baseline;
+}
+.nav:not(.nav--inline) a { padding-left: calc(2px + .24em); }
+.nav:not(.nav--inline) a:first-child { justify-self: end; }
+.nav:not(.nav--inline) a:last-child { justify-self: start; }
+
+.nav a:hover,
+.nav a[aria-current="page"] {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+
+.star { margin: 0 24px; font-size: 15px; }
+
+/* Pages intérieures : manchette réduite sur une ligne */
+.masthead--compact { margin-bottom: 30px; }
+.masthead--compact .masthead-row { margin-top: 14px; align-items: center; }
+.masthead--compact .brand-name { font-size: clamp(36px, 6.4vw, 66px); letter-spacing: .05em; }
+
+.nav--inline {
+  border: 0;
+  padding: 0;
+  font-size: 11px;
+  letter-spacing: .2em;
+}
+
+.nav--inline .star { margin: 0 12px; font-size: 12px; }
+
+/* ---------- Accueil ---------- */
+
+/* La manchette : le titre remplit la largeur, « MAGAZINE » dessous,
+   le bouton jour / nuit posé dans le coin */
+/* Le cadre de la manchette : la photo entre deux doubles filets identiques (épais dehors, fin dedans),
+   le titre et « MAGAZINE » centrés dedans, dans les deux sens */
+.masthead--center { margin-bottom: 0; }
+.masthead--center .masthead-row {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  margin: 0;
+  --title-size: clamp(46px, 13.6vw, 140px);
+  /* Via Appia laisse ~0,1 em de vide au-dessus des capitales : on le reprend pour que le vide
+     au-dessus du titre égale celui sous « MAGAZINE » (mesuré dans le navigateur) */
+  padding: 30px 0 calc(30px + var(--title-size) * .0485);
+  text-align: center;
+}
+.rule--flip { border-top: 1px solid var(--ink); border-bottom: 2px solid var(--ink); }
+.home .nav { border-top: 0; }
+
+/* La photo de l'imprimerie derrière le titre, de filet à filet, très estompée */
+.masthead--center .masthead-row::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: url("../img/masthead-press-2.jpg") 5% 0 / 140% auto no-repeat; /* le visage tombe entre PARK et ROW */
+  opacity: .22;
+}
+.masthead--center .brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.masthead--center .brand-name {
+  font-size: var(--title-size);
+  margin-top: calc(var(--title-size) * -.0485);
+  letter-spacing: .06em;
+  word-spacing: .22em;
+  white-space: nowrap;
+  padding-left: .06em;       /* compense l'espacement après la dernière lettre : vraiment centré */
+}
+.masthead--center .brand-sub { font-size: 17px; letter-spacing: .5em; padding-left: .5em; }
+
+}
+
+/* La citation du numéro */
+/* La citation du numéro : en italique, centrée, son auteur dessous */
+.quote {
+  max-width: 30em;
+  margin: 36px auto 0;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.quote p {
+  margin: 0;
+  font: italic 400 21px/1.5 'Old Newspaper Types', 'Times New Roman', Times, serif;
+}
+
+.quote-credit {
+  margin-top: 10px;
+  text-align: center;
+  font: 700 11px/1.6 var(--sign);
+  text-transform: uppercase;
+  letter-spacing: .22em;
+  color: var(--ink-soft);
+}
+
+/* L'annonce du PDF du numéro, en tête de l'accueil : une ligne en machine à écrire, sans cadre */
+.coming-soon {
+  margin: 40px 0 0;
+  text-align: center;
+  font: 400 clamp(22px, 4.4vw, 34px)/1.3 'Special Elite', 'Courier New', monospace;
+}
+
+/* Les articles en bandeau : une image large, le titre dessous, le crédit en face */
+.stories {
+  display: grid;
+  gap: 44px;
+  margin-top: 44px;
+}
+
+.story-image {
+  display: block;
+  aspect-ratio: 21 / 8;
+  overflow: hidden;
+}
+
+.story-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.frame--story { aspect-ratio: 21 / 8; }
+
+/* La source de l'image, en petit sous le bandeau */
+.story-source {
+  margin: 6px 0 0;
+  text-align: right;
+  font: 400 11px/1.4 var(--sign);
+  letter-spacing: .06em;
+  color: var(--ink-soft);
+}
+
+.story-source + .story-head { margin-top: 6px; }
+
+.story-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 20px;
+  margin-top: 14px;
+}
+
+.story-title {
+  margin: 0;
+  font: 700 22px/1.25 var(--sign);
+}
+
+.story-title a { text-decoration: none; }
+.story-title a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; }
+
+.story-credit {
+  margin: 0;
+  font: 400 12px/1.4 var(--sign);
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  color: var(--ink-soft);
+}
+
+.story-lede {
+  max-width: 46em;
+  margin: 8px 0 0;
+  font-size: 16px;
+}
+
+.more {
+  font: 800 18px/1 var(--sign);
+  letter-spacing: .12em;
+  text-decoration: none;
+}
+
+.more:hover,
+.more:focus-visible {
+  outline: none;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
+
+/* ---------- Un article ---------- */
+
+.article {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.article-head {
+  margin: 34px 0 30px;
+  text-align: center;
+}
+
+.article-kicker {
+  margin: 0 0 14px;
+  font: 700 11px/1.6 var(--sign);
+  text-transform: uppercase;
+  letter-spacing: .24em;
+  color: var(--ink-soft);
+}
+
+.article-title {
+  margin: 0;
+  font: 800 clamp(32px, 6vw, 54px)/1.05 var(--sign);
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}
+
+.article-dek {
+  margin: 12px 0 0;
+  font: italic 400 19px/1.4 'Times New Roman', Times, serif;
+}
+
+.article-byline {
+  margin: 16px 0 0;
+  font: 700 12px/1.6 var(--sign);
+  text-transform: uppercase;
+  letter-spacing: .24em;
+}
+
+/* Le texte courant des articles, en Times New Roman */
+.article p {
+  margin: 0 0 1.25em;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 19px;
+  line-height: 1.6;
+}
+
+.article .epigraph p { font-family: 'Times New Roman', Times, serif; }
+
+.article h2 {
+  margin: 48px 0 18px;
+  padding-top: 16px;
+  border-top: 2px solid var(--ink);
+  font: 800 24px/1.2 var(--sign);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.article blockquote {
+  margin: 28px 0;
+  padding: 2px 0 2px 22px;
+  border-left: 3px solid var(--ink);
+}
+
+.article blockquote p { margin: 0; }
+
+.article blockquote footer {
+  margin-top: 10px;
+  font: 700 11px/1.6 var(--sign);
+  text-transform: uppercase;
+  letter-spacing: .22em;
+  color: var(--ink-soft);
+}
+
+/* L'épigraphe : le poème cité en tête d'article, puis sa source */
+.article .epigraph { margin: 0 0 36px; }
+.article .epigraph p { font-style: italic; font-size: 16px; line-height: 1.55; }
+.article .epigraph p + p { margin-top: 14px; }
+.article .epigraph footer {
+  margin-top: 14px;
+  font: 400 13px/1.5 var(--sign);
+  text-transform: none;
+  letter-spacing: .02em;
+}
+
+.noteref { font-size: .7em; line-height: 0; }
+.noteref a { text-decoration: none; }
+.noteref a:hover { text-decoration: underline; }
+
+.fig { margin: 32px 0; }
+/* arrivée depuis la galerie (article.html#img-3) : un peu d'air au-dessus de l'image */
+[id^="img-"] { scroll-margin-top: 28px; }
+.fig--lead { margin-top: 0; }
+.fig--narrow { max-width: 520px; margin-left: auto; margin-right: auto; }
+.fig--portrait { max-width: 250px; margin-left: auto; margin-right: auto; }
+
+.fig img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Plusieurs images : des cases de même taille, bord à bord, comme dans le PDF */
+.fig-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.fig-grid img {
+  aspect-ratio: var(--cell, 4 / 3);
+  object-fit: cover;
+}
+
+/* Les deux définitions côte à côte, chacune avec ses images, séparées d'un trait (comme dans le PDF) */
+.defs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 32px 0;
+}
+
+/* Dans chaque colonne : le terme, les images (à la même hauteur des deux côtés), puis la définition.
+   Les définitions n'ont pas la même longueur : la plus courte finit plus tôt, sans trou au-dessus des images. */
+.defs-col { display: flex; flex-direction: column; padding: 0 22px; }
+.defs-col .defs-term { order: 0; }
+.defs-col .defs-imgs { order: 1; margin-bottom: 14px; }
+.defs-col > p:not(.defs-term) { order: 2; }
+.defs-mobile { display: none; }
+.defs-col:first-child { padding-left: 0; border-right: 2px solid var(--ink); }
+.defs-col:last-of-type { padding-right: 2px; } /* compense le trait : les deux colonnes ont la même largeur */
+
+.article .defs p { font-size: 17px; line-height: 1.5; margin-bottom: .8em; }
+.article .defs .defs-term { margin-bottom: .4em; }
+
+.defs-imgs { grid-template-columns: 1fr; }
+.defs-imgs { align-content: start; }
+.defs-imgs img { display: block; width: 100%; height: auto; aspect-ratio: var(--cell); object-fit: cover; }
+
+.defs figcaption,
+.defs > figcaption { grid-column: 1 / -1; }
+
+/* The Constellations : la page de titre du PDF, ciel étoilé derrière le titre, le Petit Prince dessous */
+.title-page {
+  margin: 0 -40px;
+  padding: 1px 40px 8px;
+  background: url(../img/the-constellations/title-stars.png) left top / cover no-repeat;
+}
+
+.title-page .article-head { margin-top: 70px; }
+.fig.title-prince { max-width: 310px; margin: 70px auto 48px; }
+.title-page { overflow-x: clip; }
+.title-sky { display: none; }
+/* les deux étoiles qui prolongent celles de ses mains, accrochées au dessin */
+.prince-wrap { position: relative; }
+.fig .prince-star { position: absolute; height: auto; max-width: none; pointer-events: none; }
+
+/* Sur ordinateur : la page de titre du PDF. Le ciel et le Petit Prince sont placés en proportion
+   de la largeur (cqw), avec les mesures du PDF (page de 595 pt de large). */
+@media (min-width: 701px) {
+  .title-page { container-type: inline-size; position: relative; padding: 0; background: none; overflow: hidden; }
+  .title-sky {
+    display: block;
+    height: calc(131cqw + 40px);
+    background: url(../img/the-constellations/title-stars-full.png) 0 -39.47cqw / 189.15cqw auto no-repeat;
+  }
+  .title-page .article-head { position: absolute; top: 7cqw; left: 40px; right: 40px; margin: 0; }
+  .title-page .fig.title-prince { position: absolute; top: 77.77cqw; left: 30.4cqw; width: 39.14cqw; max-width: none; margin: 0; }
+}
+/* La citation qui clôt The Constellations : centrée, gras italique, sans trait, comme dans le PDF */
+.article .closing-quote { margin: 64px auto 0; padding: 0; border: 0; max-width: 640px; text-align: center; text-wrap: balance; }
+.article .closing-quote p { font-weight: 700; font-size: 20px; line-height: 1.55; }
+
+.fig--end-prince { max-width: 440px; margin: 80px auto 24px; }
+
+/* Introduction : « TO UTOPIA » en tête, puis les 4 images de Park Row (Fuller) comme dans le PDF :
+   trois plans et, dans la dernière case, le plan large des sous-titres, sa légende et la signature */
+.article .intro-kicker { margin-bottom: .9em; text-transform: uppercase; letter-spacing: .06em; }
+.brodie-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; align-items: start; }
+.brodie-grid img { display: block; width: 100%; height: auto; }
+.brodie-cell figcaption { margin-top: 8px; }
+.article .brodie-sign { margin: 22px 0 0 4px; font-weight: 700; font-size: 22px; letter-spacing: .06em; }
+
+.fig--golder { max-width: 520px; margin-left: auto; margin-right: auto; }
+
+/* Le montage final : une image de chaque côté d'une colonne d'images */
+.fig-collage {
+  display: grid;
+  grid-template-columns: 1fr 1.9fr 1fr;
+  align-items: center;
+}
+
+.collage-mid img + img { margin-top: 0; }
+
+.fig figcaption,
+.defs figcaption {
+  margin-top: 8px;
+  font: 400 12px/1.5 var(--sign);
+  letter-spacing: .04em;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.notes {
+  margin-top: 48px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.notes ol {
+  margin: 12px 0 0;
+  padding-left: 22px;
+}
+
+.notes li { margin: 0 0 6px; }
+.notes a { text-decoration: none; }
+.notes a:hover { text-decoration: underline; }
+
+.frame {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  margin: 0 0 18px;
+  border: 1px solid var(--ink);
+  font: 400 13px/1 var(--sign);
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--ink-soft);
+}
+
+.button {
+  display: inline-block;
+  margin-top: 22px;
+  padding: 14px 36px;
+  border: 2px solid var(--ink);
+  font: 700 15px/1 var(--sign);
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  text-decoration: none;
+}
+
+.button:hover { background: var(--ink); color: var(--paper); }
+
+/* Le PDF du numéro, à droite de son titre */
+.button--pdf {
+  margin: 0 0 0 18px;
+  padding: 8px 14px 6px;
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+.foot {
+  margin-top: 56px;
+  padding-top: 10px;
+  border-top: 2px solid var(--ink);
+  text-align: right;
+  font: 800 20px/1 var(--sign);
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}
+
+/* ---------- Pages intérieures ---------- */
+
+.giant {
+  margin: 0;
+  /* Augustus laisse ~0,09 em de vide au-dessus des capitales : on le reporte en bas pour que le mot
+     soit centré entre les deux filets ; à gauche, l'espacement de la dernière lettre (mesuré) */
+  padding: calc(18px - .043em) 0 calc(8px + .043em) .03em;
+  text-align: center;
+  font: 400 clamp(52px, 15vw, 138px)/1.05 'Augustus', 'Times New Roman', serif;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+/* Augustus n'a pas de crénage : le Y de GALLERY reste loin du R, on le rapproche à la main */
+.giant .kern-tight { margin-left: -.1em; }
+
+/* La page Issues : le numéro et ses articles en caractères de vieux journal */
+.issue-head {
+  margin: 36px 0 12px;
+  text-align: center;
+  font: 400 30px/1.2 'Old Newspaper Types', 'Times New Roman', Times, serif;
+}
+
+.issue-head .pdf {
+  margin-left: 16px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-decoration: none;
+}
+
+.issue-head .pdf:hover { text-decoration: underline; }
+
+.articles {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+  font: 400 23px/2.3 'Old Newspaper Types', 'Times New Roman', Times, serif;
+}
+
+.articles a { text-decoration: none; }
+.articles .by { font-size: .62em; color: var(--ink-soft); white-space: nowrap; }
+
+/* Intertitre de rubrique dans la liste (Miscellaneous) */
+.articles .articles-section {
+  margin-top: 14px;
+  font: 700 12px/2.4 var(--sign);
+  text-transform: uppercase;
+  letter-spacing: .24em;
+  color: var(--ink-soft);
+}
+.articles a:hover { text-decoration: underline; }
+
+.minor {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  margin: 40px 0 0;
+}
+
+.minor h2 { margin: 0 0 6px; font: 700 25px/1.2 var(--sign); }
+
+.minor ul {
+  margin: 0;
+  padding: 0 0 0 56px;
+  list-style: none;
+  font: 700 16px/1.5 var(--sign);
+}
+
+.minor .arrow { display: block; width: 72px; height: 54px; }
+.minor .arrow svg { display: block; width: 100%; height: 100%; }
+
+.statement {
+  margin: 28px 0 0;
+  text-align: center;
+  font: italic 400 20px/1.4 var(--sign);
+}
+
+.statement-sub {
+  margin: 6px 0 0;
+  text-align: center;
+  font: 700 12px/1.6 var(--sign);
+  text-transform: uppercase;
+  letter-spacing: .24em;
+  color: var(--ink-soft);
+}
+
+/* Le texte de la mission, en Times New Roman */
+.mission {
+  max-width: 640px;
+  margin: 30px auto 0;
+}
+.mission p {
+  margin: 0 0 1.1em;
+  font: 400 19px/1.6 'Times New Roman', Times, serif;
+}
+.mission .mission-sign,
+.article .mission-sign { margin-top: 1.6em; text-align: right; font-style: italic; }
+
+/* Les membres du magazine, sur trois colonnes */
+.roles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 270px));
+  justify-content: center;
+  gap: 6px 40px;
+  margin: 110px 0 40px;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+  font: 700 23px/1.7 var(--sign);
+}
+
+.roles li { white-space: nowrap; }
+
+/* La galerie : toutes les images des articles, en cases égales */
+/* Galerie rangée : le numéro, un sommaire de ses articles, puis une section par article */
+.gal-toc {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  margin: 10px auto 0;
+  padding: 0;
+  list-style: none;
+  font: 400 17px/2 'Old Newspaper Types', 'Times New Roman', Times, serif;
+}
+.gal-toc li { white-space: nowrap; }
+.gal-toc li:not(:last-child)::after { content: '✱'; margin: 0 12px; font: 400 12px var(--sign); color: var(--ink-soft); }
+.gal-toc .gal-toc-section { font: 700 11px/2 var(--sign); text-transform: uppercase; letter-spacing: .2em; color: var(--ink-soft); }
+.gal-toc a { text-decoration: none; }
+.gal-toc a:hover { text-decoration: underline; }
+.gal-count { font: 400 11px var(--sign); color: var(--ink-soft); vertical-align: super; }
+
+.gal-section {
+  margin: 56px 0 0;
+  text-align: center;
+  font: 700 12px/1.6 var(--sign);
+  text-transform: uppercase;
+  letter-spacing: .24em;
+  padding-left: .24em;
+  color: var(--ink-soft);
+}
+.gal-article { margin-top: 48px; scroll-margin-top: 20px; }
+.gal-section + .gal-article { margin-top: 14px; }
+.gal-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 20px;
+  padding-top: 12px;
+  border-top: 2px solid var(--ink);
+}
+.gal-title { margin: 0; font: 700 22px/1.25 var(--sign); }
+.gal-title a { text-decoration: none; }
+.gal-title a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; }
+.gal-meta {
+  margin: 0;
+  font: 400 12px/1.4 var(--sign);
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  color: var(--ink-soft);
+}
+.gal-sep { margin: 0 6px; }
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px 20px;
+  margin-top: 20px;
+}
+
+.tile { margin: 0; }
+
+.tile a { display: block; }
+
+.tile img {
+  display: block;
+  width: 100%;
+  height: auto; /* sinon l'attribut height de l'image l'emporte sur le rapport */
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+
+.tile figcaption {
+  margin-top: 8px;
+  font: 400 12px/1.5 var(--sign);
+  letter-spacing: .04em;
+}
+
+.tile-from {
+  display: block;
+  color: var(--ink-soft);
+}
+
+.tile-from a { text-decoration: none; }
+.tile-from a:hover { text-decoration: underline; }
+
+.plain {
+  margin: 36px 0 0;
+  text-align: center;
+  font: 400 20px/1.5 var(--sign);
+}
+
+/* ---------- Petits écrans ---------- */
+
+@media (max-width: 700px) {
+  .page { padding: 16px 18px 32px; }
+  .brand-name { font-size: 42px; }
+  .nav { font-size: 11px; letter-spacing: .16em; }
+  .star { margin: 0 10px; }
+  .masthead--compact .brand-name { font-size: 12.5vw; }
+  .nav--inline .star { margin: 0 8px; }
+  .page { padding-top: 82px; }
+  .corner-logo { --logo-w: 84px; }
+  .story-image, .frame--story { aspect-ratio: 16 / 9; }
+  .article h2 { font-size: 21px; }
+  .tiles { grid-template-columns: 1fr 1fr; gap: 20px 12px; }
+  .roles { grid-template-columns: repeat(3, auto); margin-top: 60px; gap: 10px 14px; font-size: 3.1vw; line-height: 1.35; }
+  .minor { gap: 20px; }
+  .minor ul { padding-left: 24px; }
+
+  /* Lecture sur téléphone : plus de texte par ligne, moins de défilement */
+  .page { padding-left: 12px; padding-right: 12px; }
+  .article p, .mission p { font-size: 15.5px; line-height: 1.45; margin-bottom: .8em; }
+  .article .epigraph p { font-size: 14px; }
+  .article blockquote { margin: 18px 0; padding-left: 12px; }
+  .fig { margin: 20px 0; }
+  .article h2 { margin: 32px 0 12px; }
+  .story-lede { font-size: 14.5px; line-height: 1.45; }
+  .stories { gap: 32px; margin-top: 28px; }
+  .articles .by { display: block; margin: -10px 0 6px; line-height: 1.3; }
+  /* téléphone : même principe que sur ordinateur, cadrage fixe en cqw ; le ciel mobile est préparé
+     sans étoile touchant le texte, le dessin ou un bord (build_constellations.py, MOBILE_*) */
+  .title-page { container-type: inline-size; position: relative; margin: 0 -12px; padding: 0; background: none; overflow: hidden; }
+  .title-sky {
+    display: block;
+    height: var(--sky-h, 170cqw);
+    background: url(../img/the-constellations/title-stars-mobile.png) 0 0 / 100cqw auto no-repeat;
+  }
+  .title-page .article-head { position: absolute; top: 9cqw; left: 12px; right: 12px; margin: 0; }
+  .title-page .fig.title-prince { position: absolute; top: var(--prince-top, 70cqw); left: 18cqw; width: 64cqw; max-width: none; margin: 0; }
+  .article .closing-quote { margin-top: 44px; }
+  .article .closing-quote p { font-size: 16.5px; }
+  .gal-toc { flex-direction: column; align-items: center; line-height: 1.8; }
+  .gal-toc li:not(:last-child)::after { content: none; }
+  .article .brodie-sign { margin-top: 12px; font-size: 14px; letter-spacing: .02em; }
+  .defs { margin: 20px 0; }
+  /* sur téléphone : les définitions courtes de la version Canva, au-dessus des images (calées en bas, à la même hauteur) */
+  .defs-desktop { display: none; }
+  .defs-mobile { display: block; }
+  .defs-col > p.defs-mobile:not(.defs-term) { order: 1; }
+  .defs-col .defs-imgs { order: 2; margin: auto 0 0; }
+  .defs-col { padding: 0 10px; }
+  .article .defs p { font-size: 13.5px; line-height: 1.4; }
+}
+
+/* ---------- Contact, en bas de chaque page ---------- */
+
+.contact {
+  margin-top: 64px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ink);
+  text-align: center;
+  font: 700 11px/1.6 var(--sign);
+  text-transform: uppercase;
+  letter-spacing: .2em;
+}
+
+.contact a {
+  text-transform: none;
+  letter-spacing: .06em;
+  text-decoration: none;
+}
+
+.contact a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+.contact-sep { margin: 0 14px; }
+
+/* ---------- L'entrée (accueil, une fois par visite) ---------- */
+
+.intro-veil, .intro-flyer, .intro-hint { display: none; }
+
+.intro body { overflow: hidden; }
+.intro .intro-veil {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #2b2d30; /* le ton des côtés sombres du dessin élargi */
+  cursor: pointer;
+}
+.intro .intro-flyer {
+  display: block;
+  position: fixed;
+  z-index: 51;
+  transform-origin: 0 0;
+  cursor: pointer;
+  outline: none;
+}
+.intro-flyer img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* l'image élargie déborde du cadre du dessin : ses côtés voyagent avec lui
+   (le dessin d'origine occupe x 336 → 1657 sur 2000) */
+.intro-flyer .intro-full {
+  left: calc(-336 / 1321 * 100%);
+  width: calc(2000 / 1321 * 100%);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.intro-cut { opacity: 0; filter: invert(1) brightness(.92); }
+.intro .intro-hint {
+  display: block;
+  position: fixed;
+  z-index: 52;
+  left: 0;
+  right: 0;
+  bottom: 7vh;
+  margin: 0;
+  text-align: center;
+  font: 700 11px/1 var(--sign);
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .9), 0 0 14px rgba(0, 0, 0, .7);
+  pointer-events: none;
+  transition: opacity .3s;
+}
+/* pendant l'entrée, le vrai logo attend que le dessin se pose dessus */
+.intro .corner-logo { visibility: hidden; }
+.hint-tap { display: none; }
+@media (hover: none) { .hint-click { display: none; } .hint-tap { display: inline; } }

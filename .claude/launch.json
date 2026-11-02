@@ -1,0 +1,8 @@
+﻿{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "park-row", "runtimeExecutable": "node", "runtimeArgs": [".claude/serve.cjs"], "port": 4173 },
+    { "name": "radar-lbc", "runtimeExecutable": "node", "runtimeArgs": ["C:/Users/Thairone/Desktop/radar-lbc/dev.js"], "port": 3210 },
+    { "name": "ct-ranked", "runtimeExecutable": "node", "runtimeArgs": ["C:/Users/Thairone/Desktop/ct-ranked/dev-server.js"], "port": 3344 }
+  ]
+}

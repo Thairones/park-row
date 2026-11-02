@@ -1,0 +1,8 @@
+.vercel
+node_modules
+package-lock.json
+captures/
+# archive : on ne garde dans le dépôt que ce qui sert encore
+archive/*
+!archive/avant-lancement-2026-11-01/
+!archive/verrou-mot-de-passe/
