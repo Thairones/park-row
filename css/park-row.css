@@ -881,6 +881,8 @@ body { position: relative; }
 .contact a:hover { text-decoration: underline; text-underline-offset: 4px; }
 
 .contact-sep { margin: 0 14px; }
+/* Instagram et Letterboxd, sur une ligne à part sous l'adresse */
+.contact-social { display: block; margin-top: 6px; }
 
 /* ---------- L'entrée (accueil, une fois par visite) ---------- */
 
