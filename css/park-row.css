@@ -647,19 +647,33 @@ body { position: relative; }
 }
 
 /* Survol du bouton (souris) : la même barre de papier journal que sur les titres traverse le bouton
-   (lente, rapide, lente), texte inversé dessous, police inchangée. Elle reste tant que la souris est dessus,
-   puis repart à l'envers. ::before = la barre, ::after = le texte inversé (copie de data-label). */
+   (lente, rapide, lente), texte inversé dessous, police inchangée. Elle reste tant que la souris est dessus ;
+   quand la souris s'en va, elle se dissipe vers la droite. ::before = la barre, ::after = le texte inversé
+   (copie de data-label). --in = bord droit de la barre, --out = bord gauche.
+   Au repos --out vaut 100 % et --in 0 % : rien n'est visible. Survol : --out revient à 0 sans transition,
+   --in monte à 100 %. Départ : --out monte à 100 % (la barre part vers la droite), puis --in retombe d'un coup. */
+@property --in  { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
+@property --out { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
+
 @media (hover: hover) and (pointer: fine) {
   .button--issue[data-label] {
     position: relative;
-    transition: --edge .53s cubic-bezier(.7, 0, .3, 1);
+    --in: 0%;
+    --out: 100%;
+    transition: --out .53s cubic-bezier(.7, 0, .3, 1), --in 0s linear .53s;
   }
-  .button--issue[data-label]:hover { background: none; color: var(--ink); --edge: 100%; }
+  .button--issue[data-label]:hover {
+    background: none;
+    color: var(--ink);
+    --in: 100%;
+    --out: 0%;
+    transition: --in .53s cubic-bezier(.7, 0, .3, 1), --out 0s;
+  }
   .button--issue[data-label]::before,
   .button--issue[data-label]::after {
     position: absolute;
     inset: 0;
-    clip-path: inset(0 calc(100% - var(--edge)) 0 0);
+    clip-path: inset(0 calc(100% - var(--in)) 0 var(--out));
     pointer-events: none;
   }
   .button--issue[data-label]::before {
