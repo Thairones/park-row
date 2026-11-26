@@ -16,16 +16,12 @@
   <script>(function(){var seen=null;try{seen=sessionStorage.getItem('pr-intro')}catch(e){}if(!seen)document.documentElement.classList.add('intro')})();</script>
   <script src="js/intro.js" defer></script>
   <script src="js/sweep.js" defer></script>
-  <link rel="preload" as="image" href="img/intro-sign-wide-2.jpg" media="(min-aspect-ratio: 2377/1805)">
-  <link rel="preload" as="image" href="img/intro-sign-tall.jpg" media="(max-aspect-ratio: 2377/1805)">
+  <link rel="preload" as="image" href="img/intro-sign-wide-2.jpg">
 </head>
 <body class="home">
   <div class="intro-veil" aria-hidden="true"></div>
   <div class="intro-flyer" role="button" tabindex="0" aria-label="Enter Park Row Magazine">
-    <picture>
-      <source media="(max-aspect-ratio: 2377/1805)" srcset="img/intro-sign-tall.jpg" width="1320" height="3006">
-      <img class="intro-full" src="img/intro-sign-wide-2.jpg" alt="Park Row Magazine" width="3599" height="1805">
-    </picture>
+    <img class="intro-full" src="img/intro-sign-wide-2.jpg" alt="Park Row Magazine" width="3599" height="1805">
     <img class="intro-cut" src="img/logo-sign-2.webp" alt="" width="1600" height="1215">
   </div>
   <p class="intro-hint" aria-hidden="true"><span class="hint-click">Click</span><span class="hint-tap">Tap</span> to enter</p>
