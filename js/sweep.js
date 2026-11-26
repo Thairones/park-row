@@ -2,12 +2,9 @@
    Le dessin est en CSS (voir « Titre survolé » et « Survol du bouton » dans park-row.css) ;
    ce script anime les valeurs qui découpent les couches, et fait toujours aller chaque passage
    jusqu'au bout, même si la souris part ou revient en cours de route.
-   - Titres des articles : la barre traverse le titre et se dissipe vers la droite, le titre passe
-     en machine à écrire. Souris partie : une nouvelle barre fait le même trajet et rend la police normale.
-   - Bouton du PDF : la barre remplit le bouton et reste tant que la souris est dessus,
-     puis se dissipe vers la droite.
-   - Au doigt (téléphone, tablette), pas de survol : toucher un titre ou le bouton joue l'animation
-     (le titre passe en machine à écrire, le bouton se remplit), puis la page s'ouvre.
+   - Titres des articles et bouton du PDF : la barre remplit le titre / le bouton (le titre en machine à écrire
+     dessus) et reste tant que la souris est dessus, puis se dissipe vers la droite.
+   - Au doigt (téléphone, tablette), pas de survol : toucher un titre ou le bouton le remplit, puis la page s'ouvre.
    Sans ce script, titres et bouton restent normaux. */
 (() => {
   'use strict';
@@ -20,8 +17,7 @@
 
   const still = window.matchMedia('(prefers-reduced-motion: reduce)');
   const EASE_IN = 'cubic-bezier(.7, 0, .3, 1)';   // la barre avance : lente, rapide, lente
-  const EASE_OUT = 'cubic-bezier(.6, 0, .4, 1)';  // elle se dissipe
-  const GROW = 530, FADE = 320;
+  const GROW = 530;
 
   // anime une valeur en % de 0 à 100 sur el, puis appelle done
   const tween = (el, prop, ms, ease, done) => {
@@ -73,85 +69,51 @@
     ruler.remove();
   };
 
-  if (touch) {
-    const titles = document.querySelectorAll('.story-title a[data-title]');
-    (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => fitTap(titles));
-    titles.forEach((el) => {
-      let busy = false;
-      el.classList.add('sweep-tap');
-      el.addEventListener('click', (e) => {
-        if (!plain(e)) return;
-        e.preventDefault();
-        if (busy) return;
-        busy = true;
-        el.style.setProperty('--tail', '0%');
-        tween(el, '--edge', GROW, EASE_IN, () => tween(el, '--tail', FADE, EASE_OUT, () => { location.href = el.href; }));
-      });
-      // retour arrière (page gardée en mémoire) : le titre redevient normal
-      window.addEventListener('pageshow', () => { busy = false; el.style.setProperty('--edge', '0%'); el.style.setProperty('--tail', '0%'); });
-    });
-  }
-
-  // Titres : idle → in (aller) → shown (machine à écrire) → back (retour) → idle
-  if (mouse && window.matchMedia('(min-width: 600px)').matches) {
-    const titles = document.querySelectorAll('.story-title a[data-title]');
-    const refit = () => fit(titles);
-    (document.fonts ? document.fonts.ready : Promise.resolve()).then(refit);
-    let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(refit, 150); });
-    titles.forEach((el) => {
-      let state = 'idle', hovered = false;
-      const pass = (back, done) => {
-        el.classList.toggle('sweep-back', back);
-        el.style.setProperty('--tail', '0%');
-        tween(el, '--edge', GROW, EASE_IN, () => tween(el, '--tail', FADE, EASE_OUT, done));
-      };
-      const goIn = () => { state = 'in'; pass(false, () => { state = 'shown'; if (!hovered) goBack(); }); };
-      const goBack = () => {
-        state = 'back';
-        pass(true, () => {
-          el.classList.remove('sweep-back');
-          el.style.setProperty('--edge', '0%');
-          el.style.setProperty('--tail', '0%');
-          state = 'idle';
-          if (hovered) goIn();
-        });
-      };
-      el.classList.add('sweep-js');
-      el.addEventListener('mouseenter', () => { hovered = true; if (state === 'idle') goIn(); });
-      el.addEventListener('mouseleave', () => { hovered = false; if (state === 'shown') goBack(); });
-    });
-  }
-
-  // Bouton du PDF : idle → filling → full → leaving → idle
-  const btn = document.querySelector('.button--issue[data-label]');
-  if (btn) {
+  // Remplir / vider : même logique pour un titre (--edge / --tail) et pour le bouton (--in / --out).
+  // idle → filling → full → leaving → idle ; le remplissage va toujours au bout, puis la barre part si la souris est partie.
+  const filler = (el, R, L) => {
     let state = 'idle', hovered = false;
-    const set = (i, o) => { btn.style.setProperty('--in', i + '%'); btn.style.setProperty('--out', o + '%'); };
-    const fill = () => {
+    const set = (r, l) => { el.style.setProperty(R, r + '%'); el.style.setProperty(L, l + '%'); };
+    const rest = () => { set(0, 0); state = 'idle'; };
+    const fill = (then) => {
       state = 'filling';
       set(0, 0);
-      tween(btn, '--in', GROW, EASE_IN, () => { state = 'full'; if (!hovered) leave(); });
+      tween(el, R, GROW, EASE_IN, () => { state = 'full'; if (then) then(); else if (!hovered) leave(); });
     };
     const leave = () => {
       state = 'leaving';
-      tween(btn, '--out', GROW, EASE_IN, () => { set(0, 100); state = 'idle'; if (hovered) fill(); });
+      tween(el, L, GROW, EASE_IN, () => { rest(); if (hovered) fill(); });
     };
-    btn.classList.add('sweep-js');
-    set(0, 100);
+    rest();
     if (mouse) {
-      btn.addEventListener('mouseenter', () => { hovered = true; if (state === 'idle') fill(); });
-      btn.addEventListener('mouseleave', () => { hovered = false; if (state === 'full') leave(); });
+      el.addEventListener('mouseenter', () => { hovered = true; if (state === 'idle') fill(); });
+      el.addEventListener('mouseleave', () => { hovered = false; if (state === 'full') leave(); });
     } else {
-      // au doigt : le bouton se remplit, puis le PDF s'ouvre
-      btn.addEventListener('click', (e) => {
+      // au doigt : remplir, puis ouvrir la page
+      el.addEventListener('click', (e) => {
         if (!plain(e)) return;
         e.preventDefault();
-        if (state !== 'idle') return;
-        state = 'filling';
-        set(0, 0);
-        tween(btn, '--in', GROW, EASE_IN, () => { location.href = btn.href; });
+        if (state === 'idle') fill(() => { location.href = el.href; });
       });
-      window.addEventListener('pageshow', () => { state = 'idle'; set(0, 100); });
+      window.addEventListener('pageshow', rest);   // retour arrière : de nouveau normal
     }
+  };
+
+  const titles = document.querySelectorAll('.story-title a[data-title]');
+  if (touch) {
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => fitTap(titles));
+    titles.forEach((el) => { el.classList.add('sweep-tap'); filler(el, '--edge', '--tail'); });
+  } else if (window.matchMedia('(min-width: 600px)').matches) {
+    const refit = () => fit(titles);
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(refit);
+    let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(refit, 150); });
+    titles.forEach((el) => { el.classList.add('sweep-js'); filler(el, '--edge', '--tail'); });
+  }
+
+  // Bouton du PDF
+  const btn = document.querySelector('.button--issue[data-label]');
+  if (btn) {
+    btn.classList.add('sweep-js');
+    filler(btn, '--in', '--out');
   }
 })();
