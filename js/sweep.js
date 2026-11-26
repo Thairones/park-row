@@ -6,11 +6,17 @@
      en machine à écrire. Souris partie : une nouvelle barre fait le même trajet et rend la police normale.
    - Bouton du PDF : la barre remplit le bouton et reste tant que la souris est dessus,
      puis se dissipe vers la droite.
-   Sans ce script (ou au doigt sur téléphone), titres et bouton restent normaux. */
+   - Au doigt (téléphone, tablette), pas de survol : toucher un titre ou le bouton joue l'animation
+     (le titre passe en machine à écrire, le bouton se remplit), puis la page s'ouvre.
+   Sans ce script, titres et bouton restent normaux. */
 (() => {
   'use strict';
-  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
   if (!(window.CSS && CSS.registerProperty && Element.prototype.animate)) return;
+  const mouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const touch = !mouse && window.matchMedia('(hover: none), (pointer: coarse)').matches;
+  if (!mouse && !touch) return;
+  // un clic « normal » (pas d'ouverture dans un nouvel onglet, etc.)
+  const plain = (e) => e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
 
   const still = window.matchMedia('(prefers-reduced-motion: reduce)');
   const EASE_IN = 'cubic-bezier(.7, 0, .3, 1)';   // la barre avance : lente, rapide, lente
@@ -52,8 +58,42 @@
     ruler.remove();
   };
 
+  // Au doigt : la version machine à écrire, posée par-dessus le titre, à la taille qui donne la même longueur
+  // de texte que le titre normal, pour que les lignes se coupent au même endroit.
+  const fitTap = (titles) => {
+    document.body.appendChild(ruler);
+    titles.forEach((el) => {
+      ruler.style.font = "400 22px/1.25 'Special Elite','Courier New',monospace";
+      ruler.textContent = el.dataset.title;
+      const tw = ruler.getBoundingClientRect().width;
+      ruler.style.font = getComputedStyle(el.querySelector('span')).font;
+      const base = ruler.getBoundingClientRect().width;
+      el.style.setProperty('--tw-size', (22 * base / tw).toFixed(2) + 'px');
+    });
+    ruler.remove();
+  };
+
+  if (touch) {
+    const titles = document.querySelectorAll('.story-title a[data-title]');
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => fitTap(titles));
+    titles.forEach((el) => {
+      let busy = false;
+      el.classList.add('sweep-tap');
+      el.addEventListener('click', (e) => {
+        if (!plain(e)) return;
+        e.preventDefault();
+        if (busy) return;
+        busy = true;
+        el.style.setProperty('--tail', '0%');
+        tween(el, '--edge', GROW, EASE_IN, () => tween(el, '--tail', FADE, EASE_OUT, () => { location.href = el.href; }));
+      });
+      // retour arrière (page gardée en mémoire) : le titre redevient normal
+      window.addEventListener('pageshow', () => { busy = false; el.style.setProperty('--edge', '0%'); el.style.setProperty('--tail', '0%'); });
+    });
+  }
+
   // Titres : idle → in (aller) → shown (machine à écrire) → back (retour) → idle
-  if (window.matchMedia('(min-width: 600px)').matches) {
+  if (mouse && window.matchMedia('(min-width: 600px)').matches) {
     const titles = document.querySelectorAll('.story-title a[data-title]');
     const refit = () => fit(titles);
     (document.fonts ? document.fonts.ready : Promise.resolve()).then(refit);
@@ -98,7 +138,20 @@
     };
     btn.classList.add('sweep-js');
     set(0, 100);
-    btn.addEventListener('mouseenter', () => { hovered = true; if (state === 'idle') fill(); });
-    btn.addEventListener('mouseleave', () => { hovered = false; if (state === 'full') leave(); });
+    if (mouse) {
+      btn.addEventListener('mouseenter', () => { hovered = true; if (state === 'idle') fill(); });
+      btn.addEventListener('mouseleave', () => { hovered = false; if (state === 'full') leave(); });
+    } else {
+      // au doigt : le bouton se remplit, puis le PDF s'ouvre
+      btn.addEventListener('click', (e) => {
+        if (!plain(e)) return;
+        e.preventDefault();
+        if (state !== 'idle') return;
+        state = 'filling';
+        set(0, 0);
+        tween(btn, '--in', GROW, EASE_IN, () => { location.href = btn.href; });
+      });
+      window.addEventListener('pageshow', () => { state = 'idle'; set(0, 100); });
+    }
   }
 })();
