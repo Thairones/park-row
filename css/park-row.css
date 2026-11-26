@@ -646,50 +646,32 @@ body { position: relative; }
   letter-spacing: normal;
 }
 
-/* Survol du bouton (souris) : la même barre de papier journal que sur les titres traverse le bouton
+/* Survol du bouton (souris) : la même barre de papier journal que sur les titres remplit le bouton
    (lente, rapide, lente), texte inversé dessous, police inchangée. Elle reste tant que la souris est dessus ;
-   quand la souris s'en va, elle se dissipe vers la droite. ::before = la barre, ::after = le texte inversé
-   (copie de data-label). --in = bord droit de la barre, --out = bord gauche.
-   Au repos --out vaut 100 % et --in 0 % : rien n'est visible. Survol : --out revient à 0 sans transition,
-   --in monte à 100 %. Départ : --out monte à 100 % (la barre part vers la droite), puis --in retombe d'un coup. */
+   quand la souris s'en va, elle se dissipe vers la droite, toujours après avoir fini de remplir.
+   ::before = la barre, ::after = le texte inversé (copie de data-label). --in = bord droit, --out = bord gauche,
+   animés par js/pdf-button.js, qui pose la classe sweep-js (sans le script : bouton normal). */
 @property --in  { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
-@property --out { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
+@property --out { syntax: '<percentage>'; inherits: true; initial-value: 100%; }
 
-@media (hover: hover) and (pointer: fine) {
-  .button--issue[data-label] {
-    position: relative;
-    --in: 0%;
-    --out: 100%;
-    transition: --out .53s cubic-bezier(.7, 0, .3, 1), --in 0s linear .53s;
-  }
-  .button--issue[data-label]:hover {
-    background: none;
-    color: var(--ink);
-    --in: 100%;
-    --out: 0%;
-    transition: --in .53s cubic-bezier(.7, 0, .3, 1), --out 0s;
-  }
-  .button--issue[data-label]::before,
-  .button--issue[data-label]::after {
-    position: absolute;
-    inset: 0;
-    clip-path: inset(0 calc(100% - var(--in)) 0 var(--out));
-    pointer-events: none;
-  }
-  .button--issue[data-label]::before {
-    content: '';
-    background: #e2d6ba url("../img/newsprint-bar.jpg") 0 50% / 1000px auto;
-  }
-  .button--issue[data-label]::after {
-    content: attr(data-label);
-    padding: inherit;
-    color: var(--paper);
-    text-align: center;
-  }
+.button--issue.sweep-js { position: relative; }
+.button--issue.sweep-js:hover { background: none; color: var(--ink); }
+.button--issue.sweep-js::before,
+.button--issue.sweep-js::after {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 calc(100% - var(--in)) 0 var(--out));
+  pointer-events: none;
 }
-
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: reduce) {
-  .button--issue[data-label] { transition: none; }
+.button--issue.sweep-js::before {
+  content: '';
+  background: #e2d6ba url("../img/newsprint-bar.jpg") 0 50% / 1000px auto;
+}
+.button--issue.sweep-js::after {
+  content: attr(data-label);
+  padding: inherit;
+  color: var(--paper);
+  text-align: center;
 }
 
 /* Le PDF du numéro, à droite de son titre */
