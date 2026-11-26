@@ -351,11 +351,7 @@ body { position: relative; }
   }
   .story-title a[data-title]::before { clip-path: inset(0 calc(100% - var(--edge)) 0 0); }
   .story-title a[data-title]::after {
-    /* deux cases dans la barre : à l'avant, un papier plus jauni/plus sombre (sur les 22 % qui précèdent le bord),
-       derrière, le papier clair. La limite entre les deux est nette (pas de dégradé). */
-    background:
-      linear-gradient(to right, transparent calc(var(--edge) - 22%), rgba(122, 96, 52, .3) calc(var(--edge) - 22%)),
-      #e2d6ba url("../img/newsprint-bar.jpg") 0 50% / 1000px auto;
+    background: #e2d6ba url("../img/newsprint-bar.jpg") 0 50% / 1000px auto;
     color: var(--paper);
     clip-path: inset(0 calc(100% - var(--edge)) 0 var(--tail));
   }
