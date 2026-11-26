@@ -1001,6 +1001,11 @@ body { position: relative; }
   user-select: none;
   -webkit-user-drag: none;
 }
+/* Écran en hauteur (téléphone) : img/intro-sign-tall.jpg, le dessin avec du fusain sombre au-dessus et au-dessous
+   (une hauteur de dessin de chaque côté), pour remplir l'écran au lieu de laisser deux bandes grises */
+@media (max-aspect-ratio: 2377/1805) {
+  .intro-flyer .intro-full { left: 0; width: 100%; top: -100%; height: 300%; }
+}
 .intro-cut { opacity: 0; }
 .intro .intro-hint {
   display: block;
