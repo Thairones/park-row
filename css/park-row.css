@@ -326,7 +326,7 @@ body { position: relative; }
 @property --edge { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
 @property --tail { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
 
-@media (hover: hover) and (pointer: fine) {
+@media (hover: hover) and (pointer: fine) and (min-width: 600px) {
   .story-title a[data-title] {
     display: inline-grid;
     /* retour (souris partie) : la barre revient d'abord de la droite, puis repart vers la gauche */
@@ -357,7 +357,7 @@ body { position: relative; }
   }
 }
 
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: reduce) {
+@media (hover: hover) and (pointer: fine) and (min-width: 600px) and (prefers-reduced-motion: reduce) {
   .story-title a[data-title],
   .story-title a[data-title]:hover { transition: none; }
 }
@@ -634,6 +634,17 @@ body { position: relative; }
 }
 
 .button:hover { background: var(--ink); color: var(--paper); }
+
+/* Le PDF du numéro en haut de l'accueil : même cadre que les autres boutons, mais garde la machine à écrire */
+.button--issue {
+  margin: 0;
+  padding: .42em 1em .3em;
+  font: inherit;
+  font-size: clamp(14px, 4.6vw, 34px);   /* sur une seule ligne, même sur téléphone */
+  white-space: nowrap;
+  text-transform: none;
+  letter-spacing: normal;
+}
 
 /* Le PDF du numéro, à droite de son titre */
 .button--pdf {
