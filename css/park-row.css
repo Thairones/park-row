@@ -105,14 +105,14 @@ a { color: inherit; }
 /* Le logo : le poteau dessiné, accroché au coin en haut à gauche de l'écran.
    Penché, il sort par le bord comme s'il tenait au mur. Inversé la nuit. */
 .corner-logo {
-  --logo-w: clamp(54px, calc((100vw - 920px) / 2 + 40px), 250px);
+  --logo-w: clamp(96px, calc((100vw - 920px) / 2 + 40px), 250px);
   position: absolute;
-  /* le panneau entier, droit, en haut à gauche (img/logo-sign-2.webp a déjà une marge transparente à gauche) */
-  top: calc(var(--logo-w) * .04);
-  left: calc(var(--logo-w) * .02);
+  top: calc(var(--logo-w) * -.12);
+  left: calc(var(--logo-w) * -.05);
   z-index: 4;
   display: block;
   width: var(--logo-w);
+  transform: rotate(22deg);
   transform-origin: 0 0;
 }
 .corner-logo img { display: block; width: 100%; height: auto; }

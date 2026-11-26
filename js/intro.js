@@ -16,7 +16,7 @@
   const full = flyer.querySelector('.intro-full');
   const cut = flyer.querySelector('.intro-cut');
   const RATIO = 2377 / 1805; // le dessin d'origine, au centre de l'image élargie (img/intro-sign-wide-2.jpg)
-  const ANGLE = 0; // le logo du coin est droit (voir .corner-logo dans le CSS)
+  const ANGLE = 22; // la même inclinaison que .corner-logo dans le CSS
   let geo = null, busy = false;
 
   function measure() {
