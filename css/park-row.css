@@ -115,7 +115,7 @@ a { color: inherit; }
   transform: rotate(22deg);
   transform-origin: 0 0;
 }
-.corner-logo img { display: block; width: 100%; height: auto; filter: invert(1) brightness(.92); }
+.corner-logo img { display: block; width: 100%; height: auto; }
 
 /* La police des grands titres de rubrique : Augustus (fonts/augustus.ttf) */
 @font-face {
@@ -996,12 +996,12 @@ body { position: relative; }
 /* l'image élargie déborde du cadre du dessin : ses côtés voyagent avec lui
    (le dessin d'origine occupe x 336 → 1657 sur 2000) */
 .intro-flyer .intro-full {
-  left: calc(-336 / 1321 * 100%);
-  width: calc(2000 / 1321 * 100%);
+  left: calc(-605 / 2377 * 100%);   /* img/intro-sign-wide-2.jpg : 3599 px, le dessin de 2377 px commence à 605 px */
+  width: calc(3599 / 2377 * 100%);
   user-select: none;
   -webkit-user-drag: none;
 }
-.intro-cut { opacity: 0; filter: invert(1) brightness(.92); }
+.intro-cut { opacity: 0; }
 .intro .intro-hint {
   display: block;
   position: fixed;
