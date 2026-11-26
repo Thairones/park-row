@@ -646,6 +646,38 @@ body { position: relative; }
   letter-spacing: normal;
 }
 
+/* Survol du bouton (souris) : la même barre de papier journal que sur les titres traverse le bouton
+   (lente, rapide, lente), texte inversé dessous, police inchangée. Elle reste tant que la souris est dessus,
+   puis repart à l'envers. ::before = la barre, ::after = le texte inversé (copie de data-label). */
+@media (hover: hover) and (pointer: fine) {
+  .button--issue[data-label] {
+    position: relative;
+    transition: --edge .53s cubic-bezier(.7, 0, .3, 1);
+  }
+  .button--issue[data-label]:hover { background: none; color: var(--ink); --edge: 100%; }
+  .button--issue[data-label]::before,
+  .button--issue[data-label]::after {
+    position: absolute;
+    inset: 0;
+    clip-path: inset(0 calc(100% - var(--edge)) 0 0);
+    pointer-events: none;
+  }
+  .button--issue[data-label]::before {
+    content: '';
+    background: #e2d6ba url("../img/newsprint-bar.jpg") 0 50% / 1000px auto;
+  }
+  .button--issue[data-label]::after {
+    content: attr(data-label);
+    padding: inherit;
+    color: var(--paper);
+    text-align: center;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: reduce) {
+  .button--issue[data-label] { transition: none; }
+}
+
 /* Le PDF du numéro, à droite de son titre */
 .button--pdf {
   margin: 0 0 0 18px;
