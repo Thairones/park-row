@@ -316,51 +316,42 @@ body { position: relative; }
 .story-title a { text-decoration: none; }
 .story-title a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; }
 
-/* Titre survolé (souris seulement) : une barre de vieux papier journal (img/newsprint-bar.jpg, faite par
-   tools/newsprint_bar.py) traverse le titre de gauche à droite, lente au début, rapide au milieu, lente à la fin,
-   puis se résorbe de la gauche jusqu'à disparaître (0,85 s en tout). Sous la barre, les couleurs sont inversées ;
-   derrière elle, le titre passe en machine à écrire (Special Elite). Quand la souris s'en va, tout se rejoue à l'envers.
-   Trois couches dans la même case : le titre (span), sa version machine à écrire (::before),
-   la barre avec le texte inversé (::after). Le texte des pseudo-éléments vient de data-title.
-   --edge = bord droit de la barre, --tail = bord gauche ; ce sont des transitions, donc elles s'inversent seules. */
+/* Titre survolé (souris seulement, fenêtre d'au moins 600 px) : une barre de vieux papier journal
+   (img/newsprint-bar.jpg, faite par tools/newsprint_bar.py) traverse le titre de gauche à droite, lente au début,
+   rapide au milieu, lente à la fin, puis se dissipe vers la droite (0,85 s). Sous la barre, les couleurs sont
+   inversées ; derrière elle, le titre passe en machine à écrire (Special Elite). Quand la souris s'en va, une
+   nouvelle barre fait le même trajet et rend au titre sa police normale. Chaque passage va toujours jusqu'au bout.
+   Trois couches dans la même case : le titre (span), sa version machine à écrire (::before), la barre avec le
+   texte inversé (::after), dont le texte vient de data-title. --edge = bord droit de la barre, --tail = bord gauche,
+   animés par js/sweep.js, qui pose la classe sweep-js ; .sweep-back = le passage du retour. */
 @property --edge { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
 @property --tail { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
 
-@media (hover: hover) and (pointer: fine) and (min-width: 600px) {
-  .story-title a[data-title] {
-    display: inline-grid;
-    /* retour (souris partie) : la barre revient d'abord de la droite, puis repart vers la gauche */
-    transition: --tail .32s cubic-bezier(.6, 0, .4, 1), --edge .53s cubic-bezier(.7, 0, .3, 1) .32s;
-  }
-  .story-title a[data-title]:hover {
-    text-decoration: none;
-    --edge: 100%;
-    --tail: 100%;
-    /* aller (souris posée) : la barre traverse, puis se résorbe par la gauche */
-    transition: --edge .53s cubic-bezier(.7, 0, .3, 1), --tail .32s cubic-bezier(.6, 0, .4, 1) .53s;
-  }
-  .story-title a[data-title] > span,
-  .story-title a[data-title]::before,
-  .story-title a[data-title]::after { grid-area: 1 / 1; white-space: nowrap; }
-  .story-title a[data-title] > span { clip-path: inset(0 0 0 var(--edge)); }
-  .story-title a[data-title]::before,
-  .story-title a[data-title]::after {
+@media (min-width: 600px) {
+  .story-title a.sweep-js { display: inline-grid; }
+  .story-title a.sweep-js:hover { text-decoration: none; }
+  .story-title a.sweep-js > span,
+  .story-title a.sweep-js::before,
+  .story-title a.sweep-js::after { grid-area: 1 / 1; white-space: nowrap; }
+  .story-title a.sweep-js::before,
+  .story-title a.sweep-js::after {
     content: attr(data-title);
     font: 400 22px/1.25 'Special Elite', 'Courier New', monospace;
     pointer-events: none;
   }
-  .story-title a[data-title]::before { clip-path: inset(0 calc(100% - var(--edge)) 0 0); }
-  .story-title a[data-title]::after {
+  /* aller : machine à écrire à gauche du bord de la barre, titre normal à droite */
+  .story-title a.sweep-js > span { clip-path: inset(0 0 0 var(--edge)); }
+  .story-title a.sweep-js::before { clip-path: inset(0 calc(100% - var(--edge)) 0 0); }
+  /* retour : l'inverse */
+  .story-title a.sweep-js.sweep-back > span { clip-path: inset(0 calc(100% - var(--edge)) 0 0); }
+  .story-title a.sweep-js.sweep-back::before { clip-path: inset(0 0 0 var(--edge)); }
+  .story-title a.sweep-js::after {
     background: #e2d6ba url("../img/newsprint-bar.jpg") 0 50% / 1000px auto;
     color: var(--paper);
     clip-path: inset(0 calc(100% - var(--edge)) 0 var(--tail));
   }
 }
 
-@media (hover: hover) and (pointer: fine) and (min-width: 600px) and (prefers-reduced-motion: reduce) {
-  .story-title a[data-title],
-  .story-title a[data-title]:hover { transition: none; }
-}
 
 
 .story-credit {
@@ -650,7 +641,7 @@ body { position: relative; }
    (lente, rapide, lente), texte inversé dessous, police inchangée. Elle reste tant que la souris est dessus ;
    quand la souris s'en va, elle se dissipe vers la droite, toujours après avoir fini de remplir.
    ::before = la barre, ::after = le texte inversé (copie de data-label). --in = bord droit, --out = bord gauche,
-   animés par js/pdf-button.js, qui pose la classe sweep-js (sans le script : bouton normal). */
+   animés par js/sweep.js, qui pose la classe sweep-js (sans le script : bouton normal). */
 @property --in  { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
 @property --out { syntax: '<percentage>'; inherits: true; initial-value: 100%; }
 
