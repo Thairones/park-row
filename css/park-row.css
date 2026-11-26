@@ -499,8 +499,18 @@ body { position: relative; }
   object-fit: cover;
 }
 
-/* Trois images d'une même séquence, côte à côte (Of Rhythm and Repetition) */
+/* Trois images d'une même séquence, côte à côte (Of Rhythm and Repetition), sur toute la largeur de la page
+   (plus large que le texte, centrées sur lui) ; sur téléphone, l'une sous l'autre, en pleine largeur */
+.article .fig--three {
+  --w: min(920px, 100vw - 32px);
+  width: var(--w);
+  margin-left: calc((100% - var(--w)) / 2);
+}
 .fig--three .fig-grid { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 600px) {
+  .article .fig--three { width: auto; margin-left: 0; }
+  .fig--three .fig-grid { grid-template-columns: 1fr; }
+}
 
 /* Les deux définitions côte à côte, chacune avec ses images, séparées d'un trait (comme dans le PDF) */
 .defs {
