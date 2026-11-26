@@ -457,6 +457,9 @@ body { position: relative; }
   object-fit: cover;
 }
 
+/* Trois images d'une même séquence, côte à côte (Of Rhythm and Repetition) */
+.fig--three .fig-grid { grid-template-columns: repeat(3, 1fr); }
+
 /* Les deux définitions côte à côte, chacune avec ses images, séparées d'un trait (comme dans le PDF) */
 .defs {
   display: grid;
