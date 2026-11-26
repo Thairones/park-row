@@ -316,6 +316,43 @@ body { position: relative; }
 .story-title a { text-decoration: none; }
 .story-title a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; }
 
+/* Titre survolé (souris seulement) : une barre pleine couleur papier traverse le titre de gauche à droite,
+   lente au début, rapide au milieu, lente à la fin, puis se résorbe de la gauche jusqu'à disparaître.
+   Sous la barre, les couleurs sont inversées ; derrière elle, le titre passe en machine à écrire (Special Elite).
+   Trois couches dans la même case : le titre (span), sa version machine à écrire (::before),
+   la barre avec le texte inversé (::after). Le texte des pseudo-éléments vient de data-title. */
+@property --edge { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
+@property --tail { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
+
+@keyframes title-sweep {
+  0%   { --edge: 0%;   --tail: 0%;   animation-timing-function: cubic-bezier(.7, 0, .3, 1); }
+  62%  { --edge: 100%; --tail: 0%;   animation-timing-function: cubic-bezier(.6, 0, .4, 1); }
+  100% { --edge: 100%; --tail: 100%; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .story-title a[data-title] { display: inline-grid; }
+  .story-title a[data-title] > span,
+  .story-title a[data-title]::before,
+  .story-title a[data-title]::after { grid-area: 1 / 1; white-space: nowrap; }
+  .story-title a[data-title]::before,
+  .story-title a[data-title]::after {
+    content: attr(data-title);
+    font: 400 22px/1.25 'Special Elite', 'Courier New', monospace;
+    clip-path: inset(0 100% 0 0);
+    pointer-events: none;
+  }
+  .story-title a[data-title]::after { background: var(--ink); color: var(--paper); }
+  .story-title a[data-title]:hover { text-decoration: none; animation: title-sweep 1.2s forwards; }
+  .story-title a[data-title]:hover > span { clip-path: inset(0 0 0 var(--edge)); }
+  .story-title a[data-title]:hover::before { clip-path: inset(0 calc(100% - var(--edge)) 0 0); }
+  .story-title a[data-title]:hover::after { clip-path: inset(0 calc(100% - var(--edge)) 0 var(--tail)); }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: reduce) {
+  .story-title a[data-title]:hover { animation: none; --edge: 100%; --tail: 100%; }
+}
+
 .story-credit {
   margin: 0;
   font: 400 12px/1.4 var(--sign);
