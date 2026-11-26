@@ -25,9 +25,40 @@
     a.onfinish = () => { el.style.setProperty(prop, '100%'); a.cancel(); done(); };
   };
 
+  // Un titre long, en machine à écrire, peut être plus large que sa place (plus large que le titre normal) :
+  // on réduit alors la taille de sa version machine à écrire juste assez pour qu'elle tienne, sans rien déplacer.
+  const ruler = document.createElement('span');
+  ruler.setAttribute('aria-hidden', 'true');
+  ruler.style.cssText = "position:absolute;left:-9999px;top:0;white-space:nowrap;visibility:hidden;font:400 22px/1.25 'Special Elite','Courier New',monospace";
+  const fit = (titles) => {
+    document.body.appendChild(ruler);
+    titles.forEach((el) => {
+      const head = el.closest('.story-head');
+      const credit = head && head.querySelector('.story-credit');
+      if (!head) return;
+      el.style.setProperty('--tw-size', '1px');               // mesurer la place sans la version machine à écrire
+      ruler.textContent = el.dataset.title;
+      const tw = ruler.getBoundingClientRect().width;
+      ruler.style.font = getComputedStyle(el).font;          // largeur du titre normal, seul
+      ruler.textContent = el.dataset.title;
+      const base = ruler.getBoundingClientRect().width;
+      ruler.style.font = "400 22px/1.25 'Special Elite','Courier New',monospace";
+      const gap = parseFloat(getComputedStyle(head).columnGap) || 0;
+      const inline = head.clientWidth - (credit ? credit.getBoundingClientRect().width + gap : 0);
+      const room = base <= inline ? inline : head.clientWidth;   // le crédit reste sur la ligne du titre, si c'était déjà le cas
+      if (tw > room) el.style.setProperty('--tw-size', (22 * room / tw).toFixed(2) + 'px');
+      else el.style.removeProperty('--tw-size');
+    });
+    ruler.remove();
+  };
+
   // Titres : idle → in (aller) → shown (machine à écrire) → back (retour) → idle
   if (window.matchMedia('(min-width: 600px)').matches) {
-    document.querySelectorAll('.story-title a[data-title]').forEach((el) => {
+    const titles = document.querySelectorAll('.story-title a[data-title]');
+    const refit = () => fit(titles);
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(refit);
+    let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(refit, 150); });
+    titles.forEach((el) => {
       let state = 'idle', hovered = false;
       const pass = (back, done) => {
         el.classList.toggle('sweep-back', back);

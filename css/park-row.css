@@ -336,7 +336,8 @@ body { position: relative; }
   .story-title a.sweep-js::before,
   .story-title a.sweep-js::after {
     content: attr(data-title);
-    font: 400 22px/1.25 'Special Elite', 'Courier New', monospace;
+    /* --tw-size : posé par js/sweep.js quand le titre en machine à écrire serait trop long pour sa place */
+    font: 400 var(--tw-size, 22px)/1.25 'Special Elite', 'Courier New', monospace;
     pointer-events: none;
   }
   /* aller : machine à écrire à gauche du bord de la barre, titre normal à droite */
