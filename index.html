@@ -15,16 +15,17 @@
   <link rel="stylesheet" href="css/park-row.css">
   <script>(function(){var seen=null;try{seen=sessionStorage.getItem('pr-intro')}catch(e){}if(!seen)document.documentElement.classList.add('intro')})();</script>
   <script src="js/intro.js" defer></script>
-  <link rel="preload" as="image" href="img/intro-sign-wide.jpg">
+  <script src="js/sweep.js" defer></script>
+  <link rel="preload" as="image" href="img/intro-sign-wide-2.jpg">
 </head>
 <body class="home">
   <div class="intro-veil" aria-hidden="true"></div>
   <div class="intro-flyer" role="button" tabindex="0" aria-label="Enter Park Row Magazine">
-    <img class="intro-full" src="img/intro-sign-wide.jpg" alt="Park Row Magazine" width="2000" height="1003">
-    <img class="intro-cut" src="img/logo-sign.webp" alt="" width="800" height="607">
+    <img class="intro-full" src="img/intro-sign-wide-2.jpg" alt="Park Row Magazine" width="3599" height="1805">
+    <img class="intro-cut" src="img/logo-sign-2.webp" alt="" width="1600" height="1215">
   </div>
   <p class="intro-hint" aria-hidden="true"><span class="hint-click">Click</span><span class="hint-tap">Tap</span> to enter</p>
-  <a class="corner-logo" href="index.html" aria-label="Park Row Magazine, home"><img src="img/logo-sign.webp" alt="" width="800" height="607"></a>
+  <a class="corner-logo" href="index.html" aria-label="Park Row Magazine, home"><img src="img/logo-sign-2.webp" alt="" width="1600" height="1215"></a>
   <div class="page">
     <header class="masthead masthead--center">
       <div class="rule rule--double"></div>
@@ -40,35 +41,13 @@
 
     <main>
 
-      <!-- Le PDF du numéro : le jour de la sortie, remplacer cette ligne par un lien vers le PDF -->
-      <p class="coming-soon">Park Row Issue #1 coming soon!</p>
+      <!-- La couverture du numéro, et le PDF -->
+      <p class="out-now">Issue #1 Out Now!</p>
+      <figure class="issue-cover">
+        <a href="pdf/park-row-issue-1.pdf"><img src="img/issue-1-cover.jpg" alt="Park Row Magazine Issue #1: To Utopia" width="1200" height="1594"></a>
+      </figure>
+      <p class="coming-soon"><a class="button button--issue" href="pdf/park-row-issue-1.pdf" data-label="Park Row Magazine Issue #1: To Utopia">Park Row Magazine Issue #1: To Utopia</a></p>
 
-      <!-- Un article = un bloc <article class="story"> : image large, titre, crédit, début, lien ..... -->
-      <section class="stories" aria-label="Articles">
-        <article class="story">
-          <a class="story-image" href="articles/a-cold-approach-to-phoenix.html">
-            <img src="img/a-cold-approach-to-phoenix/cover-nightgame.jpg" alt="Two men in profile leaning toward a screen, in black and white" width="1600" height="900" style="object-position: 50% 35%">
-          </a>
-          <p class="story-source"><em>Nightgame</em> (2026) by Parker Corey</p>
-          <div class="story-head">
-            <h2 class="story-title"><a href="articles/a-cold-approach-to-phoenix.html">A Cold Approach to Phoenix</a></h2>
-            <p class="story-credit">Chaz Mullis</p>
-          </div>
-          <p class="story-lede">Few films today fit the mold of what used to be called a city symphony, and even fewer would dare to extend what such a sub-genre would entail in today's world. <a class="more" href="articles/a-cold-approach-to-phoenix.html" aria-label="Read the full article">.....</a></p>
-        </article>
-
-        <article class="story">
-          <a class="story-image" href="articles/anima-of-animals.html">
-            <img src="img/anima/cover.jpg" alt="Aurochs, horses and deer painted on the cave wall at Lascaux" width="720" height="472">
-          </a>
-          <p class="story-source">Lascaux painting, February 2006 — Prof saxx, Wikimedia Commons, CC BY-SA 3.0</p>
-          <div class="story-head">
-            <h2 class="story-title"><a href="articles/anima-of-animals.html">Anima of Animals</a></h2>
-            <p class="story-credit">Aron Mishktar</p>
-          </div>
-          <p class="story-lede">The animal in Rilke dwells within space. Here I will designate the Open as a lived field, a world neither cut off from the being that moves through it, nor reduced to an object by a gaze that turns back upon itself. Humans, by contrast, are a reflection of the world; a world itself reversed by a monotheistic god who turns humanity back toward himself. <a class="more" href="articles/anima-of-animals.html" aria-label="Read the full article">.....</a></p>
-        </article>
-      </section>
     </main>
 
     <footer class="contact">Contact us<span class="contact-sep" aria-hidden="true">✱</span><a href="mailto:parkrowmagazine@gmail.com">parkrowmagazine@gmail.com</a><span class="contact-social"><a href="https://www.instagram.com/parkrowmagazine" target="_blank" rel="me noopener">Instagram</a><span class="contact-sep" aria-hidden="true">✱</span><a href="https://letterboxd.com/parkrowmag/" target="_blank" rel="me noopener">Letterboxd</a></span></footer>
