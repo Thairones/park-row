@@ -17,6 +17,7 @@
   const cut = flyer.querySelector('.intro-cut');
   const RATIO = 2377 / 1805; // le dessin d'origine, au centre de l'image élargie (img/intro-sign-wide-2.jpg)
   const DRAW = 2377, WIDE = 3599, LEFT = 605; // largeurs du dessin et de l'image élargie, début du dessin (px)
+  const COVER = matchMedia('(hover: hover) and (pointer: fine)').matches; // ordinateur, à la souris
   const ANGLE = 22; // la même inclinaison que .corner-logo dans le CSS
   let geo = null, busy = false;
 
@@ -24,13 +25,14 @@
     const cs = getComputedStyle(logo);
     const L = parseFloat(cs.left), T = parseFloat(cs.top), W = parseFloat(cs.width);
     const vw = innerWidth, vh = innerHeight;
-    // L'image élargie couvre tout l'écran (comme « cover ») : pas de bandes grises,
-    // quitte à rogner ses bords quand l'écran n'a pas ses proportions.
-    const Wi = Math.max(vw * DRAW / WIDE, vh * RATIO);
+    // À la souris (ordinateur), l'image élargie couvre tout l'écran (comme « cover ») : pas de bandes grises,
+    // quitte à rogner ses bords. Au doigt (téléphone, tablette), le dessin entier, bord à bord sur un côté.
+    const Wi = COVER ? Math.max(vw * DRAW / WIDE, vh * RATIO) : Math.min(vw, vh * RATIO);
     // Le dessin est posé à sa taille plein écran et ne fait que rétrécir vers le logo du coin :
     // jamais agrandi depuis une petite taille, il reste net (sinon certains navigateurs l'étirent, flou).
-    // x0 : l'image élargie centrée sur l'écran ; le dessin y commence à 605 px.
-    geo = { L, T, W, Wi, x0: (vw - Wi * WIDE / DRAW) / 2 + Wi * LEFT / DRAW, y0: (vh - Wi / RATIO) / 2 };
+    // x0 : en plein écran, l'image élargie centrée (le dessin y commence à 605 px) ; sinon le dessin centré.
+    const x0 = COVER ? (vw - Wi * WIDE / DRAW) / 2 + Wi * LEFT / DRAW : (vw - Wi) / 2;
+    geo = { L, T, W, Wi, x0, y0: (vh - Wi / RATIO) / 2 };
     Object.assign(flyer.style, { left: L + 'px', top: T + 'px', width: Wi + 'px', height: Wi / RATIO + 'px' });
     flyer.style.transform = start();
   }
