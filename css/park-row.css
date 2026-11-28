@@ -267,7 +267,7 @@ body { position: relative; }
 }
 
 /* La couverture du numéro, en tête de l'accueil, le bouton du PDF dessous */
-.issue-cover { margin: 40px 0 0; }
+.issue-cover { margin: 40px auto 0; width: min(100%, 520px); }   /* une couverture en hauteur : centrée, à taille de couverture */
 .issue-cover a, .issue-cover img { display: block; width: 100%; height: auto; }
 .issue-cover + .coming-soon { margin-top: 32px; }
 .issue-cover + .coming-soon .button--issue { font-size: clamp(11px, 3.6vw, 30px); }   /* titre plus long : tient sur une ligne */
