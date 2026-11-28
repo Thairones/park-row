@@ -5,9 +5,13 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # dossier d
 # (numéro, rubrique, fichier, titre, auteur) — même ordre que la page Issues
 ISSUES = [
     ('Issue #1 : To Utopia', [
-        # Lancement du 1er novembre : seulement A Cold Approach to Phoenix et Anima of Animals.
-        # Les autres attendent (liste complète dans archive/avant-lancement-2026-11-01/build_gallery.py) :
-        # Introduction: To Utopia (retirée le 2 nov.), The Cleared Walkway, The Constellations, We Still Bow to the Old Gods, Cinema Without a World.
+        # Dans l'ordre du PDF du numéro (pdf/park-row-issue-1.pdf)
+        (None, 'articles/to-utopia.html', 'Introduction: To Utopia', 'The Park Row Editors'),
+        (None, 'articles/to-the-cleared-walkway.html', 'The Cleared Walkway', 'Zoey M. Hogan'),
+        (None, 'articles/the-constellations.html', 'The Constellations', 'Timothé Legrand-Hug'),
+        (None, 'articles/we-still-bow-to-the-old-gods.html', 'We Still Bow to the Old Gods', 'Jean-Luc Jacques'),
+        (None, 'articles/cinema-without-a-world.html', 'Cinema Without a World', 'The Park Row Editors'),
+        (None, 'articles/of-rhythm-and-repetition.html', 'Of Rhythm and Repetition', 'Paul V.P.'),
         (None, 'articles/a-cold-approach-to-phoenix.html', 'A Cold Approach to Phoenix', 'Chaz Mullis'),
         ('Miscellaneous', 'articles/anima-of-animals.html', 'Anima of Animals', 'Aron Mishktar'),
     ]),
