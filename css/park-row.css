@@ -294,8 +294,9 @@ body { position: relative; }
   from { left: -60%; opacity: 1; }
   to   { left: 130%; opacity: 1; }
 }
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .issue-cover a:hover::after { animation: cover-shimmer .65s cubic-bezier(.4, 0, .2, 1); }
+/* js/sweep.js pose la classe « shine » et ne la retire qu'à la fin du passage : le reflet va toujours au bout */
+@media (prefers-reduced-motion: no-preference) {
+  .issue-cover a.shine::after { animation: cover-shimmer .65s cubic-bezier(.4, 0, .2, 1); }
 }
 .issue-cover + .coming-soon { margin-top: 32px; }
 .issue-cover + .coming-soon .button--issue { font-size: clamp(11px, 3.6vw, 30px); }   /* titre plus long : tient sur une ligne */
@@ -820,12 +821,12 @@ body { position: relative; }
 
 /* Le texte de la mission, en Times New Roman */
 .mission {
-  max-width: 640px;
+  max-width: 720px;
   margin: 30px auto 0;
 }
 .mission p {
   margin: 0 0 1.1em;
-  font: 400 19px/1.6 'Times New Roman', Times, serif;
+  font: 400 23px/1.55 'Times New Roman', Times, serif;
 }
 .mission .mission-sign,
 .article .mission-sign { margin-top: 1.6em; text-align: right; font-style: italic; }
@@ -956,6 +957,7 @@ body { position: relative; }
   /* Lecture sur téléphone : plus de texte par ligne, moins de défilement */
   .page { padding-left: 12px; padding-right: 12px; }
   .article p, .mission p { font-size: 15.5px; line-height: 1.45; margin-bottom: .8em; }
+  .mission p { font-size: 18.5px; }
   .article .epigraph p { font-size: 14px; }
   .article blockquote { margin: 18px 0; padding-left: 12px; }
   .fig { margin: 20px 0; }

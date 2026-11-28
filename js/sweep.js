@@ -117,3 +117,35 @@
     filler(btn, '--in', '--out');
   }
 })();
+
+/* La couverture du numéro (accueil) : un reflet de lumière passe sur l'image (CSS « .issue-cover a.shine »).
+   À la souris, il part au survol et va toujours au bout, même si la souris s'en va ; au doigt, toucher
+   la couverture fait passer le reflet, puis ouvre le PDF. */
+(() => {
+  'use strict';
+  const a = document.querySelector('.issue-cover a');
+  if (!a || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const mouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  let running = false, then = null;
+  const shine = () => {
+    if (running) return;
+    running = true;
+    a.classList.add('shine');
+  };
+  a.addEventListener('animationend', () => {
+    a.classList.remove('shine');
+    running = false;
+    if (then) { const go = then; then = null; go(); }
+  });
+  if (mouse) {
+    a.addEventListener('mouseenter', shine);
+  } else {
+    a.addEventListener('click', (e) => {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      if (running) return;
+      then = () => { location.href = a.href; };
+      shine();
+    });
+  }
+})();
